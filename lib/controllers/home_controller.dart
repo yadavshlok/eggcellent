@@ -1,15 +1,25 @@
 import 'package:get/get.dart';
-import '../models/farm_model.dart';
+
+class Farm {
+  final String id;
+  final String name;
+  final String location;
+  final double rating;
+  final int reviewCount;
+
+  Farm({
+    required this.id,
+    required this.name,
+    required this.location,
+    required this.rating,
+    required this.reviewCount,
+  });
+}
 
 class HomeController extends GetxController {
-  final isLoading = false.obs;
-  final nearbyFarms = <Farm>[].obs;
-  final recentlyViewed = <Farm>[].obs;
-  final stats = {
-    'farms': 50,
-    'customers': 2500,
-    'rating': 4.8,
-  }.obs;
+  final RxBool isLoading = false.obs;
+  final RxList<Farm> farms = <Farm>[].obs;
+  final RxList<Farm> filteredFarms = <Farm>[].obs;
 
   @override
   void onInit() {
@@ -20,26 +30,70 @@ class HomeController extends GetxController {
   Future<void> fetchNearbyFarms() async {
     try {
       isLoading.value = true;
-      // Fetch farms from API
+
+      // Simulate API call
       await Future.delayed(const Duration(seconds: 1));
-      // nearbyFarms.value = fetchedFarms;
+
+      // Mock data
+      farms.value = [
+        Farm(
+          id: '1',
+          name: 'Sunrise Organic Farm',
+          location: 'Whitefield, Bangalore',
+          rating: 4.8,
+          reviewCount: 324,
+        ),
+        Farm(
+          id: '2',
+          name: 'Green Valley Farms',
+          location: 'Sarjapur, Bangalore',
+          rating: 4.6,
+          reviewCount: 189,
+        ),
+        Farm(
+          id: '3',
+          name: 'Happy Hens Farm',
+          location: 'Koramangala, Bangalore',
+          rating: 4.9,
+          reviewCount: 456,
+        ),
+        Farm(
+          id: '4',
+          name: 'Rural Retreat Farms',
+          location: 'Devanahalli, Bangalore',
+          rating: 4.5,
+          reviewCount: 276,
+        ),
+        Farm(
+          id: '5',
+          name: 'Organic Dreams Farm',
+          location: 'Yeshwanthpur, Bangalore',
+          rating: 4.7,
+          reviewCount: 198,
+        ),
+      ];
+
+      filteredFarms.value = farms;
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      print('Error fetching farms: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
   void searchFarms(String query) {
-    // Search logic
+    if (query.isEmpty) {
+      filteredFarms.value = farms;
+    } else {
+      filteredFarms.value = farms
+          .where((farm) =>
+      farm.name.toLowerCase().contains(query.toLowerCase()) ||
+          farm.location.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    }
   }
 
-  void addToRecentlyViewed(Farm farm) {
-    if (!recentlyViewed.contains(farm)) {
-      recentlyViewed.insert(0, farm);
-      if (recentlyViewed.length > 10) {
-        recentlyViewed.removeLast();
-      }
-    }
+  void refreshFarms() {
+    fetchNearbyFarms();
   }
 }

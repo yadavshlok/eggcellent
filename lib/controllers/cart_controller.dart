@@ -1,45 +1,83 @@
 import 'package:get/get.dart';
-import '../models/cart_model.dart';
+
+class CartItem {
+  final String id;
+  final String eggType;
+  final String farmName;
+  final double pricePerUnit;
+  final int quantity;
+
+  CartItem({
+    required this.id,
+    required this.eggType,
+    required this.farmName,
+    required this.pricePerUnit,
+    required this.quantity,
+  });
+}
 
 class CartController extends GetxController {
-  final cart = <CartItem>[].obs;
-  final subtotal = 0.0.obs;
-  final deliveryFee = 50.0.obs;
-  final total = 0.0.obs;
+  final RxList<CartItem> cart = <CartItem>[].obs;
+  final RxDouble subtotal = 0.0.obs;
+  final RxDouble deliveryFee = 40.0.obs;
+  final RxDouble total = 0.0.obs;
 
   bool get isEmpty => cart.isEmpty;
 
-  void addToCart(CartItem item) {
-    final existingIndex = cart.indexWhere((i) => i.batchId == item.batchId);
+  void addToCart({
+    required String id,
+    required String eggType,
+    required String farmName,
+    required double pricePerUnit,
+    required int quantity,
+  }) {
+    // Check if item already exists
+    final existingIndex = cart.indexWhere((item) => item.id == id);
+
     if (existingIndex >= 0) {
-      cart[existingIndex].quantity += item.quantity;
+      // Update quantity
+      final existingItem = cart[existingIndex];
+      cart[existingIndex] = CartItem(
+        id: existingItem.id,
+        eggType: existingItem.eggType,
+        farmName: existingItem.farmName,
+        pricePerUnit: existingItem.pricePerUnit,
+        quantity: existingItem.quantity + quantity,
+      );
     } else {
-      cart.add(item);
+      // Add new item
+      cart.add(CartItem(
+        id: id,
+        eggType: eggType,
+        farmName: farmName,
+        pricePerUnit: pricePerUnit,
+        quantity: quantity,
+      ));
     }
-    calculateTotal();
-    Get.snackbar('Success', 'Item added to cart');
+    _calculateTotals();
   }
 
-  void removeFromCart(String itemId) {
-    cart.removeWhere((item) => item.id == itemId);
-    calculateTotal();
-  }
-
-  void updateQuantity(String itemId, int quantity) {
-    final index = cart.indexWhere((item) => item.id == itemId);
-    if (index >= 0) {
-      cart[index].quantity = quantity;
-      calculateTotal();
-    }
-  }
-
-  void calculateTotal() {
-    subtotal.value = cart.fold(0.0, (sum, item) => sum + item.totalPrice);
-    total.value = subtotal.value + deliveryFee.value;
+  void removeFromCart(String id) {
+    cart.removeWhere((item) => item.id == id);
+    _calculateTotals();
   }
 
   void clearCart() {
     cart.clear();
-    calculateTotal();
+    _calculateTotals();
+  }
+
+  void _calculateTotals() {
+    double sum = 0.0;
+    for (var item in cart) {
+      sum += item.pricePerUnit * item.quantity;
+    }
+    subtotal.value = sum;
+    total.value = sum + deliveryFee.value;
+  }
+
+  void updateDeliveryFee(double fee) {
+    deliveryFee.value = fee;
+    total.value = subtotal.value + deliveryFee.value;
   }
 }

@@ -1,51 +1,78 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
+import '../utils/app_constants.dart';
 import '../utils/colors.dart';
-import '../utils/text_styles.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
   final bool isLoading;
+  final bool isOutlined;
   final Color? backgroundColor;
-  final Color? textColor;
+  final Widget? icon;
 
   const PrimaryButton({
     Key? key,
     required this.label,
     required this.onPressed,
     this.isLoading = false,
+    this.isOutlined = false,
     this.backgroundColor,
-    this.textColor,
+    this.icon,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: double.infinity,
-      height: 48.h,
+      height: 6.5.h,
+      decoration: BoxDecoration(
+        gradient: isOutlined
+            ? null
+            : (backgroundColor != null ? null : AppColors.primaryGradient),
+        color: isOutlined ? Colors.transparent : backgroundColor,
+        borderRadius: BorderRadius.circular(8.0),
+        border: isOutlined
+            ? Border.all(color: AppColors.primary, width: 1.5)
+            : null,
+        boxShadow: isOutlined ? null : AppConstants.cardShadow,
+      ),
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor ?? AppColors.primary,
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.r),
+            borderRadius: BorderRadius.circular(8.0),
           ),
         ),
         child: isLoading
             ? SizedBox(
-          height: 20.h,
-          width: 20.w,
+          height: 2.5.h,
+          width: 2.5.h,
           child: CircularProgressIndicator(
-            color: textColor ?? AppColors.white,
-            strokeWidth: 2,
+            strokeWidth: 2.5,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              isOutlined ? AppColors.primary : Colors.white,
+            ),
           ),
         )
-            : Text(
-          label,
-          style: AppTextStyles.buttonText.copyWith(
-            color: textColor ?? AppColors.white,
-          ),
+            : Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (icon != null) ...[
+              icon!,
+              SizedBox(width: 2.w),
+            ],
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w600,
+                color: isOutlined ? AppColors.primary : Colors.white,
+              ),
+            ),
+          ],
         ),
       ),
     );

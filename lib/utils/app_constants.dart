@@ -1,6 +1,33 @@
+// lib/utils/constants.dart
+
+import 'package:flutter/material.dart';
+
 class AppConstants {
-  static const String appName = 'Eggcellent';
-  static const String baseUrl = 'http://localhost:3000/api';
-  static const int connectionTimeout = 30000;
-  static const int receiveTimeout = 30000;
+  // Shadows
+  static const List<BoxShadow> lightShadow = [
+    BoxShadow(
+      color: Color(0x0D000000),
+      blurRadius: 2,
+      offset: Offset(0, 1),
+    ),
+  ];
+
+  static const List<BoxShadow> elevatedShadow = [
+    BoxShadow(
+      color: Color(0x1A000000),
+      blurRadius: 8,
+      offset: Offset(0, 2),
+    ),
+  ];
+
+  static const List<BoxShadow> cardShadow = [
+    BoxShadow(
+      color: Color(0x0F000000),
+      blurRadius: 4,
+      offset: Offset(0, 1),
+    ),
+  ];
+
+  // Radius
+  static const double buttonRadius = 8.0;
 }

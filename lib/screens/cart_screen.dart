@@ -7,6 +7,7 @@ import '../../utils/colors.dart';
 import '../../utils/text_styles.dart';
 import '../../widgets/common_app_bar.dart';
 import '../../widgets/primary_button.dart';
+import '../utils/app_constants.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -29,10 +30,10 @@ class CartScreen extends StatelessWidget {
             children: [
               Icon(
                 Icons.shopping_cart_outlined,
-                size: 80,
+                size: 15.h,
                 color: AppColors.grey400,
               ),
-              SizedBox(height: 16.h),
+              SizedBox(height: 3.h),
               Text(
                 'Your cart is empty',
                 style: AppTextStyles.headline4.copyWith(
@@ -46,29 +47,34 @@ class CartScreen extends StatelessWidget {
           children: [
             Expanded(
               child: ListView.builder(
-                padding: EdgeInsets.all(16.w),
+                padding: EdgeInsets.all(4.w),
                 itemCount: controller.cart.length,
                 itemBuilder: (context, index) {
                   final item = controller.cart[index];
                   return Container(
-                    margin: EdgeInsets.only(bottom: 12.h),
-                    padding: EdgeInsets.all(12.w),
+                    margin: EdgeInsets.only(bottom: 2.h),
+                    padding: EdgeInsets.all(3.w),
                     decoration: BoxDecoration(
                       color: AppColors.white,
-                      borderRadius: BorderRadius.circular(8.r),
+                      borderRadius: BorderRadius.circular(8.0),
+                      boxShadow: AppConstants.lightShadow,
                     ),
                     child: Row(
                       children: [
                         Container(
-                          width: 60.w,
-                          height: 60.h,
+                          width: 20.w,
+                          height: 20.w,
                           decoration: BoxDecoration(
-                            color: AppColors.grey200,
-                            borderRadius: BorderRadius.circular(8.r),
+                            color: AppColors.grey100,
+                            borderRadius: BorderRadius.circular(8.0),
                           ),
-                          child: const Icon(Icons.egg),
+                          child: Icon(
+                            Icons.egg,
+                            color: AppColors.primary,
+                            size: 10.w,
+                          ),
                         ),
-                        SizedBox(width: 12.w),
+                        SizedBox(width: 3.w),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,18 +85,23 @@ class CartScreen extends StatelessWidget {
                               ),
                               Text(
                                 item.farmName,
-                                style: AppTextStyles.caption,
+                                style: AppTextStyles.bodySmall,
                               ),
                               Text(
-                                '₹${item.pricePerUnit} x ${item.quantity}',
-                                style: AppTextStyles.labelMedium,
+                                '₹${item.pricePerUnit.toStringAsFixed(2)} x ${item.quantity}',
+                                style: AppTextStyles.labelLarge.copyWith(
+                                  color: AppColors.primary,
+                                ),
                               ),
                             ],
                           ),
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete),
-                          onPressed: () => controller.removeFromCart(item.id),
+                          onPressed: () =>
+                              controller.removeFromCart(item.id),
+                          color: AppColors.error,
+                          iconSize: 5.w,
                         ),
                       ],
                     ),
@@ -99,14 +110,14 @@ class CartScreen extends StatelessWidget {
               ),
             ),
             Container(
-              padding: EdgeInsets.all(16.w),
+              padding: EdgeInsets.all(4.w),
               decoration: BoxDecoration(
                 color: AppColors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 8.0,
+                    offset: const Offset(0, -2),
                   ),
                 ],
               ),
@@ -115,38 +126,53 @@ class CartScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Subtotal', style: AppTextStyles.bodyMedium),
                       Text(
-                        '₹${controller.subtotal.value.toStringAsFixed(2)}',
+                        'Subtotal',
                         style: AppTextStyles.bodyMedium,
                       ),
-                    ],
-                  ),
-                  SizedBox(height: 8.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Delivery', style: AppTextStyles.bodyMedium),
-                      Text(
-                        '₹${controller.deliveryFee.value.toStringAsFixed(2)}',
-                        style: AppTextStyles.bodyMedium,
-                      ),
-                    ],
-                  ),
-                  Divider(height: 24.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Total', style: AppTextStyles.headline4),
-                      Text(
-                        '₹${controller.total.value.toStringAsFixed(2)}',
-                        style: AppTextStyles.headline4.copyWith(
-                          color: AppColors.primary,
+                      Obx(
+                            () => Text(
+                          '₹${controller.subtotal.value.toStringAsFixed(2)}',
+                          style: AppTextStyles.bodyMedium,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 1.5.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Delivery',
+                        style: AppTextStyles.bodyMedium,
+                      ),
+                      Obx(
+                            () => Text(
+                          '₹${controller.deliveryFee.value.toStringAsFixed(2)}',
+                          style: AppTextStyles.bodyMedium,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Divider(height: 3.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Total',
+                        style: AppTextStyles.headline4,
+                      ),
+                      Obx(
+                            () => Text(
+                          '₹${controller.total.value.toStringAsFixed(2)}',
+                          style: AppTextStyles.headline4.copyWith(
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 2.h),
                   PrimaryButton(
                     label: 'Proceed to Checkout',
                     onPressed: () => Get.toNamed(AppRoutes.checkout),

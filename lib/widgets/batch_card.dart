@@ -26,7 +26,7 @@ class BatchCard extends StatelessWidget {
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(12.0),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,7 +38,7 @@ class BatchCard extends StatelessWidget {
                 height: 60.h,
                 decoration: BoxDecoration(
                   color: AppColors.grey200,
-                  borderRadius: BorderRadius.circular(8.r),
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: const Icon(Icons.egg),
               ),

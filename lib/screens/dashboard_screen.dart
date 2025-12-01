@@ -1,92 +1,200 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
-import '../../controllers/farmer_controller.dart';
 import '../../utils/colors.dart';
 import '../../utils/text_styles.dart';
+import '../../widgets/primary_button.dart';
+import '../utils/app_constants.dart';
 
 class FarmerDashboardScreen extends StatelessWidget {
   const FarmerDashboardScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<FarmerController>();
-
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: Text(
+          'Dashboard',
+          style: AppTextStyles.headline3.copyWith(color: Colors.white),
+        ),
         backgroundColor: AppColors.primary,
+        elevation: 0,
+        centerTitle: false,
       ),
-      body: Obx(
-            () => controller.isLoading.value
-            ? const Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(16.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Overview', style: AppTextStyles.headline3),
-                SizedBox(height: 16.h),
-                if (controller.stats.value != null)
-                  GridView.count(
-                    crossAxisCount: 2,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    mainAxisSpacing: 12.h,
-                    crossAxisSpacing: 12.w,
-                    childAspectRatio: 1.5,
-                    children: [
-                      _buildStatCard(
-                        'Total Batches',
-                        controller.stats.value!.totalBatches.toString(),
-                        Icons.inventory,
-                        AppColors.info,
-                      ),
-                      _buildStatCard(
-                        'Total Earnings',
-                        '₹${controller.stats.value!.totalEarnings.toStringAsFixed(0)}',
-                        Icons.monetization_on,
-                        AppColors.success,
-                      ),
-                      _buildStatCard(
-                        'Active Orders',
-                        controller.stats.value!.activeOrders.toString(),
-                        Icons.shopping_bag,
-                        AppColors.warning,
-                      ),
-                      _buildStatCard(
-                        'Freshness Score',
-                        '${controller.stats.value!.freshnessScore}%',
-                        Icons.stars,
-                        AppColors.primary,
-                      ),
-                    ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(4.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 1.h),
+              Text(
+                'Recent Activity',
+                style: AppTextStyles.headline3,
+              ),
+              SizedBox(height: 2.h),
+
+              // Activity Item 1
+              _buildActivityCard(
+                'Batch A-001',
+                'Brown Eggs',
+                'Completed',
+                AppColors.success,
+                '120 eggs',
+                '₹2,400',
+              ),
+              SizedBox(height: 1.5.h),
+
+              // Activity Item 2
+              _buildActivityCard(
+                'Batch A-002',
+                'White Eggs',
+                'In Progress',
+                AppColors.warning,
+                '150 eggs',
+                '₹2,850',
+              ),
+              SizedBox(height: 1.5.h),
+
+              // Activity Item 3
+              _buildActivityCard(
+                'Batch A-003',
+                'Organic Eggs',
+                'Pending',
+                AppColors.info,
+                '100 eggs',
+                '₹2,500',
+              ),
+              SizedBox(height: 1.5.h),
+
+              // Activity Item 4
+              _buildActivityCard(
+                'Batch A-004',
+                'Desi Eggs',
+                'Delivered',
+                AppColors.success,
+                '180 eggs',
+                '₹3,240',
+              ),
+              SizedBox(height: 1.5.h),
+
+              // Activity Item 5
+              _buildActivityCard(
+                'Batch A-005',
+                'Free Range Eggs',
+                'Ready to Ship',
+                AppColors.warning,
+                '200 eggs',
+                '₹4,000',
+              ),
+              SizedBox(height: 3.h),
+
+              // Quick Actions
+              Text(
+                'Quick Actions',
+                style: AppTextStyles.headline4,
+              ),
+              SizedBox(height: 1.5.h),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: PrimaryButton(
+                      label: 'Add Batch',
+                      onPressed: () {},
+                    ),
                   ),
-              ],
-            ),
+                  SizedBox(width: 2.w),
+                  Expanded(
+                    child: PrimaryButton(
+                      label: 'View Orders',
+                      onPressed: () {},
+                      isOutlined: true,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 2.h),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+  Widget _buildActivityCard(
+      String batchId,
+      String type,
+      String status,
+      Color statusColor,
+      String quantity,
+      String price,
+      ) {
     return Container(
-      padding: EdgeInsets.all(12.w),
+      padding: EdgeInsets.all(3.w),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(8.0),
+        boxShadow: AppConstants.lightShadow,
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: color, size: 32),
-          SizedBox(height: 8.h),
-          Text(value, style: AppTextStyles.headline3.copyWith(color: color)),
-          Text(title, style: AppTextStyles.caption),
+          Row(
+            children: [
+              Container(
+                width: 12.w,
+                height: 12.w,
+                decoration: BoxDecoration(
+                  color: statusColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Icon(Icons.egg, color: statusColor, size: 6.w),
+              ),
+              SizedBox(width: 3.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      batchId,
+                      style: AppTextStyles.subheading2,
+                    ),
+                    Text(
+                      type,
+                      style: AppTextStyles.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 2.5.w, vertical: 0.6.h),
+                decoration: BoxDecoration(
+                  color: statusColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(6.0),
+                ),
+                child: Text(
+                  status,
+                  style: AppTextStyles.labelSmall.copyWith(color: statusColor),
+                ),
+              ),
+            ],
+          ),
+          Divider(height: 2.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                quantity,
+                style: AppTextStyles.bodyMedium,
+              ),
+              Text(
+                price,
+                style: AppTextStyles.subheading2.copyWith(
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

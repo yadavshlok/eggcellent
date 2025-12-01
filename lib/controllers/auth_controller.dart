@@ -1,97 +1,44 @@
+// lib/controllers/auth_controller.dart
+
 import 'package:get/get.dart';
-import '../repositories/auth_repository.dart';
-import '../models/user_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthController extends GetxController {
-  final AuthRepository _authRepository = AuthRepository();
+  final RxBool isLoading = false.obs;
+  final RxBool isPasswordVisible = false.obs;
 
-  final isLoading = false.obs;
-  final isLoggedIn = false.obs;
-  Rx<User?> currentUser = Rx<User?>(null);
-
-  @override
-  void onInit() {
-    super.onInit();
-    checkLoginStatus();
-  }
-
-  Future<void> checkLoginStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-    if (token != null) {
-      isLoggedIn.value = true;
-    }
+  void togglePasswordVisibility() {
+    isPasswordVisible.value = !isPasswordVisible.value;
   }
 
   Future<void> login(String email, String password) async {
+    isLoading.value = true;
     try {
-      isLoading.value = true;
-      final response = await _authRepository.login(
-        email: email,
-        password: password,
-      );
-
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', response.token);
-      await prefs.setString('userId', response.user.id);
-
-      currentUser.value = response.user;
-      isLoggedIn.value = true;
-
-      Get.snackbar('Success', 'Login successful');
+      // API call here
+      await Future.delayed(const Duration(seconds: 2));
+      // On success navigate to home
+      print('Login successful: $email');
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      print('Login error: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> register({
-    required String fullName,
-    required String email,
-    required String password,
-    required String phoneNumber,
-    required String role,
-  }) async {
+  Future<void> register(String email, String password) async {
+    isLoading.value = true;
     try {
-      isLoading.value = true;
-      final response = await _authRepository.register(
-        fullName: fullName,
-        email: email,
-        password: password,
-        phoneNumber: phoneNumber,
-        role: role,
-      );
-
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', response.token);
-      await prefs.setString('userId', response.user.id);
-
-      currentUser.value = response.user;
-      isLoggedIn.value = true;
-
-      Get.snackbar('Success', 'Registration successful');
+      // API call here
+      await Future.delayed(const Duration(seconds: 2));
+      print('Registration successful: $email');
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      print('Registration error: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> logout() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('token');
-      await prefs.remove('userId');
-
-      _authRepository.logout();
-      currentUser.value = null;
-      isLoggedIn.value = false;
-
-      Get.snackbar('Success', 'Logged out successfully');
-    } catch (e) {
-      Get.snackbar('Error', e.toString());
-    }
+  void logout() {
+    isPasswordVisible.value = false;
+    print('Logged out');
   }
 }

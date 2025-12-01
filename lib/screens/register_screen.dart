@@ -5,7 +5,6 @@ import '../../controllers/auth_controller.dart';
 import '../../utils/colors.dart';
 import '../../utils/text_styles.dart';
 import '../../utils/validators.dart';
-import '../../widgets/custom_input_field.dart';
 import '../../widgets/primary_button.dart';
 
 class RegisterScreen extends StatefulWidget {

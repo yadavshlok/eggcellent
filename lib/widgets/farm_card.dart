@@ -26,7 +26,7 @@ class FarmCard extends StatelessWidget {
         padding: EdgeInsets.all(12.w),
         decoration: BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.circular(12.r),
+          borderRadius: BorderRadius.circular(12.0),
         ),
         child: Row(
           children: [
@@ -35,7 +35,7 @@ class FarmCard extends StatelessWidget {
               height: 80.h,
               decoration: BoxDecoration(
                 color: AppColors.grey200,
-                borderRadius: BorderRadius.circular(8.r),
+                borderRadius: BorderRadius.circular(8.0),
               ),
               child: const Icon(Icons.agriculture, size: 40),
             ),
