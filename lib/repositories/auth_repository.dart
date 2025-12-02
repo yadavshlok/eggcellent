@@ -4,7 +4,6 @@ import '../models/user_model.dart';
 import '../utils/app_constants.dart';
 
 class AuthRepository {
-  final String _baseUrl = AppConstants.baseUrl;
   String? _token;
 
   AuthRepository({String? token}) : _token = token;
@@ -18,7 +17,7 @@ class AuthRepository {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('$_baseUrl/auth/register'),
+        Uri.parse('/auth/register'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'fullName': fullName,
@@ -45,7 +44,7 @@ class AuthRepository {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('$_baseUrl/auth/login'),
+        Uri.parse('/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': email,

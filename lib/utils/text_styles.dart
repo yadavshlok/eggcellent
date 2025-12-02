@@ -73,4 +73,11 @@ class AppTextStyles {
     fontWeight: FontWeight.w500,
     color: AppColors.textGrey,
   );
+
+  static TextStyle labelMedium = TextStyle(
+    fontSize: 14.sp,
+    fontWeight: FontWeight.w500,
+    color: AppColors.textDark,
+  );
+
 }

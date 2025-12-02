@@ -25,7 +25,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       centerTitle: false,
       automaticallyImplyLeading: false,
-      leadingWidth: showBackButton ? 60.w : 0,
+      leadingWidth: showBackButton ? 2.w : 0,
       leading: showBackButton
           ? IconButton(
         icon: Icon(Icons.arrow_back, color: AppColors.textDark),

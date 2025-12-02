@@ -1,15 +1,17 @@
-class Subscription {
+class FarmerSubscription {
   final String id;
-  final String farmName;
+  final String customerId;
+  final String customerName;
   final String frequency;
   final int quantityPerDelivery;
   final double pricePerOrder;
   final DateTime nextDelivery;
   final String status;
 
-  Subscription({
+  FarmerSubscription({
     required this.id,
-    required this.farmName,
+    required this.customerId,
+    required this.customerName,
     required this.frequency,
     required this.quantityPerDelivery,
     required this.pricePerOrder,
@@ -17,10 +19,11 @@ class Subscription {
     required this.status,
   });
 
-  factory Subscription.fromJson(Map<String, dynamic> json) {
-    return Subscription(
+  factory FarmerSubscription.fromJson(Map<String, dynamic> json) {
+    return FarmerSubscription(
       id: json['id'],
-      farmName: json['farmName'],
+      customerId: json['customerId'],
+      customerName: json['customerName'],
       frequency: json['frequency'],
       quantityPerDelivery: json['quantityPerDelivery'],
       pricePerOrder: json['pricePerOrder'].toDouble(),

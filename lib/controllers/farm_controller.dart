@@ -1,40 +1,111 @@
 import 'package:get/get.dart';
-import '../models/farm_model.dart';
-import '../models/batch_model.dart';
+
+class FarmModel {
+  final String id;
+  final String name;
+  final String location;
+  final String type;
+  final int birdCount;
+  final bool isVerified;
+
+  FarmModel({
+    required this.id,
+    required this.name,
+    required this.location,
+    required this.type,
+    required this.birdCount,
+    this.isVerified = false,
+  });
+}
 
 class FarmController extends GetxController {
-  final isLoading = false.obs;
-  final myFarms = <Farm>[].obs;
-  final farmBatches = <Batch>[].obs;
-  Rx<Farm?> selectedFarm = Rx<Farm?>(null);
+  final RxBool isLoading = false.obs;
+  final RxList<FarmModel> farms = <FarmModel>[].obs;
 
   @override
   void onInit() {
     super.onInit();
-    fetchMyFarms();
+    fetchFarms();
   }
 
-  Future<void> fetchMyFarms() async {
+  Future<void> fetchFarms() async {
     try {
       isLoading.value = true;
-      // Fetch farms from API
+
+      // Simulate API call
       await Future.delayed(const Duration(seconds: 1));
+
+      // Mock data
+      farms.value = [
+        FarmModel(
+          id: '1',
+          name: 'Sunrise Organic Farm',
+          location: 'Whitefield, Bangalore',
+          type: 'Organic',
+          birdCount: 500,
+          isVerified: true,
+        ),
+        FarmModel(
+          id: '2',
+          name: 'Green Valley Farms',
+          location: 'Sarjapur Road',
+          type: 'Free Range',
+          birdCount: 350,
+          isVerified: true,
+        ),
+        FarmModel(
+          id: '3',
+          name: 'Happy Hens Farm',
+          location: 'Koramangala',
+          type: 'Organic',
+          birdCount: 420,
+          isVerified: false,
+        ),
+        FarmModel(
+          id: '4',
+          name: 'Rural Retreat',
+          location: 'Devanahalli',
+          type: 'Traditional',
+          birdCount: 280,
+          isVerified: true,
+        ),
+      ];
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      print('Error fetching farms: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> fetchFarmDetails(String farmId) async {
-    try {
-      isLoading.value = true;
-      // Fetch farm details and batches
-      await Future.delayed(const Duration(seconds: 1));
-    } catch (e) {
-      Get.snackbar('Error', e.toString());
-    } finally {
-      isLoading.value = false;
-    }
+  void addFarm(String name, String location, String type, int birdCount) {
+    final newFarm = FarmModel(
+      id: DateTime.now().toString(),
+      name: name,
+      location: location,
+      type: type,
+      birdCount: birdCount,
+      isVerified: false,
+    );
+    farms.add(newFarm);
+
+    Get.snackbar(
+      'Success',
+      'Farm added successfully!',
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
+
+  void deleteFarm(String farmId) {
+    farms.removeWhere((farm) => farm.id == farmId);
+
+    Get.snackbar(
+      'Success',
+      'Farm deleted successfully!',
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
+
+  void refreshFarms() {
+    fetchFarms();
   }
 }

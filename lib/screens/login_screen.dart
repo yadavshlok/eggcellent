@@ -135,9 +135,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   label: 'Login',
                   onPressed: () {
                     controller.login(
-                      emailController.text,
-                      passwordController.text,
+                      email: emailController.text.trim(),
+                      password: passwordController.text.trim(),
                     );
+
                   },
                   isLoading: controller.isLoading.value,
                 )),

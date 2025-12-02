@@ -52,7 +52,7 @@ class CustomTextField extends StatelessWidget {
             keyboardType: keyboardType,
             validator: validator,
             style: TextStyle(
-              fontSize: 12.sp,
+              fontSize: 12 .sp,
               color: AppColors.textDark,
               fontWeight: FontWeight.w500,
             ),

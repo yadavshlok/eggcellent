@@ -1,65 +1,52 @@
 class OrderItem {
-  final String batchId;
-  final String eggType;
+  final String id;
+  final String productName;
   final int quantity;
-  final double pricePerUnit;
+  final double price;
 
   OrderItem({
-    required this.batchId,
-    required this.eggType,
+    required this.id,
+    required this.productName,
     required this.quantity,
-    required this.pricePerUnit,
+    required this.price,
   });
 }
 
 class Order {
   final String id;
-  final String farmId;
   final List<OrderItem> items;
-  final String status;
-  final String deliveryAddress;
-  final String city;
-  final String phoneNumber;
-  final String paymentMethod;
-  final double subtotal;
-  final double deliveryFee;
   final double total;
+  final String status;
   final DateTime createdAt;
+  final String? farmName;
+  final String? deliveryAddress;
 
   Order({
     required this.id,
-    required this.farmId,
     required this.items,
-    required this.status,
-    required this.deliveryAddress,
-    required this.city,
-    required this.phoneNumber,
-    required this.paymentMethod,
-    required this.subtotal,
-    required this.deliveryFee,
     required this.total,
+    required this.status,
     required this.createdAt,
+    this.farmName,
+    this.deliveryAddress,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
       id: json['id'],
-      farmId: json['farmId'],
-      items: (json['items'] as List).map((e) => OrderItem(
-        batchId: e['batchId'],
-        eggType: e['eggType'],
-        quantity: e['quantity'],
-        pricePerUnit: (e['pricePerUnit'] ?? 0.0).toDouble(),
-      )).toList(),
+      items: (json['items'] as List)
+          .map((item) => OrderItem(
+        id: item['id'],
+        productName: item['productName'],
+        quantity: item['quantity'],
+        price: item['price'].toDouble(),
+      ))
+          .toList(),
+      total: json['total'].toDouble(),
       status: json['status'],
-      deliveryAddress: json['deliveryAddress'],
-      city: json['city'],
-      phoneNumber: json['phoneNumber'],
-      paymentMethod: json['paymentMethod'],
-      subtotal: (json['subtotal'] ?? 0.0).toDouble(),
-      deliveryFee: (json['deliveryFee'] ?? 0.0).toDouble(),
-      total: (json['total'] ?? 0.0).toDouble(),
       createdAt: DateTime.parse(json['createdAt']),
+      farmName: json['farmName'],
+      deliveryAddress: json['deliveryAddress'],
     );
   }
 }

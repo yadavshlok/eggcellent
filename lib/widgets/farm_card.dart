@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
+import '../utils/app_constants.dart';
 import '../utils/colors.dart';
 import '../utils/text_styles.dart';
 
@@ -22,41 +23,94 @@ class FarmCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.only(bottom: 12.h),
-        padding: EdgeInsets.all(12.w),
+        margin: EdgeInsets.only(bottom: 2.h),
+        padding: EdgeInsets.all(4.w),
         decoration: BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.circular(12.0),
+          borderRadius: BorderRadius.circular(8.0),
+          boxShadow: AppConstants.lightShadow,
         ),
         child: Row(
           children: [
+            // Farm Image/Icon
             Container(
-              width: 80.w,
-              height: 80.h,
+              width: 20.w,
+              height: 20.w,
               decoration: BoxDecoration(
-                color: AppColors.grey200,
+                color: AppColors.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8.0),
               ),
-              child: const Icon(Icons.agriculture, size: 40),
+              child: Icon(
+                Icons.agriculture,
+                size: 10.w,
+                color: AppColors.primary,
+              ),
             ),
-            SizedBox(width: 12.w),
+            SizedBox(width: 4.w),
+
+            // Farm Details
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(farmName, style: AppTextStyles.subheading2),
-                  SizedBox(height: 4.h),
-                  Text(location, style: AppTextStyles.caption),
-                  SizedBox(height: 4.h),
+                  Text(
+                    farmName,
+                    style: AppTextStyles.subheading2,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(height: 0.5.h),
                   Row(
                     children: [
-                      const Icon(Icons.star, color: AppColors.warning, size: 16),
-                      SizedBox(width: 4.w),
-                      Text(rating.toString(), style: AppTextStyles.labelMedium),
+                      Icon(
+                        Icons.location_on,
+                        size: 4.w,
+                        color: AppColors.textGrey,
+                      ),
+                      SizedBox(width: 1.w),
+                      Expanded(
+                        child: Text(
+                          location,
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.textGrey,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 0.5.h),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.star,
+                        color: AppColors.warning,
+                        size: 4.w,
+                      ),
+                      SizedBox(width: 1.w),
+                      Text(
+                        rating.toStringAsFixed(1),
+                        style: AppTextStyles.bodyMedium,
+                      ),
+                      SizedBox(width: 1.w),
+                      Text(
+                        '(${(rating * 10).toInt()} reviews)',
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.textGrey,
+                        ),
+                      ),
                     ],
                   ),
                 ],
               ),
+            ),
+
+            // Arrow Icon
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 4.w,
+              color: AppColors.textGrey,
             ),
           ],
         ),
