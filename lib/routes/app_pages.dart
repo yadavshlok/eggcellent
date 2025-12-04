@@ -89,7 +89,7 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.chat,
-      page: () => const ChatScreen(),
+      page: () => const CustomerChatScreen(),
       binding: CustomerBinding(),
     ),
     GetPage(

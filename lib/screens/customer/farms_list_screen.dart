@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
+
 import '../../controllers/farm_controller.dart';
+import '../../data/models/farm.dart';
 import '../../utils/colors.dart';
 import '../customer/farm_detail_screen.dart';
 
@@ -24,7 +26,7 @@ class FarmsListScreen extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(30),
                 bottomRight: Radius.circular(30),
               ),
@@ -36,10 +38,12 @@ class FarmsListScreen extends StatelessWidget {
                   children: [
                     IconButton(
                       onPressed: () => Get.back(),
-                      icon: Icon(Icons.arrow_back, color: Colors.white, size: 24.sp),
+                      icon: Icon(Icons.arrow_back,
+                          color: Colors.white, size: 24.sp),
                     ),
                     SizedBox(width: 2.w),
-                    Icon(Icons.agriculture, color: Colors.white, size: 28.sp),
+                    Icon(Icons.agriculture,
+                        color: Colors.white, size: 28.sp),
                     SizedBox(width: 3.w),
                     Text(
                       'All Farms',
@@ -54,13 +58,14 @@ class FarmsListScreen extends StatelessWidget {
               ),
             ),
           ),
+
           // Farm List Content
           Padding(
             padding: EdgeInsets.only(top: 16.h),
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.grey[50],
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(30),
                   topRight: Radius.circular(30),
                 ),
@@ -68,13 +73,14 @@ class FarmsListScreen extends StatelessWidget {
               child: Obx(() {
                 if (farmController.isLoading.value) {
                   return Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.primary,
-                    ),
+                    child:
+                    CircularProgressIndicator(color: AppColors.primary),
                   );
                 }
 
-                if (farmController.allFarms.isEmpty) {
+                final farms = farmController.allFarms;
+
+                if (farms.isEmpty) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -110,9 +116,9 @@ class FarmsListScreen extends StatelessWidget {
                   onRefresh: () => farmController.fetchAllFarms(),
                   child: ListView.builder(
                     padding: EdgeInsets.all(4.w),
-                    itemCount: farmController.allFarms.length,
+                    itemCount: farms.length,
                     itemBuilder: (context, index) {
-                      final farm = farmController.allFarms[index];
+                      final Farm farm = farms[index];
                       return _buildFarmCard(farm);
                     },
                   ),
@@ -125,10 +131,10 @@ class FarmsListScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFarmCard(farm) {
+  Widget _buildFarmCard(Farm farm) {
     return GestureDetector(
       onTap: () {
-        Get.to(() => FarmDetailScreen(), arguments: farm.id);
+        Get.to(() => const FarmDetailScreen(), arguments: farm.id);
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 2.h),
@@ -139,100 +145,74 @@ class FarmsListScreen extends StatelessWidget {
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
               blurRadius: 10,
-              offset: Offset(0, 4),
+              offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Farm Image
+            // Simple colored header
             Container(
-              height: 18.h,
+              height: 8.h,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(16),
                   topRight: Radius.circular(16),
                 ),
                 gradient: LinearGradient(
-                  colors: [AppColors.primary.withOpacity(0.7), AppColors.primaryDark.withOpacity(0.7)],
+                  colors: [
+                    AppColors.primary.withOpacity(0.9),
+                    AppColors.primaryDark.withOpacity(0.9),
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                image: farm.imageUrl != null
-                    ? DecorationImage(
-                  image: NetworkImage(farm.imageUrl!),
-                  fit: BoxFit.cover,
-                )
-                    : null,
               ),
-              child: Stack(
-                children: [
-                  if (farm.imageUrl == null)
-                    Center(
-                      child: Icon(
-                        Icons.agriculture,
-                        size: 50,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4.w),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(2.w),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child:
+                      const Icon(Icons.agriculture, color: Colors.white),
+                    ),
+                    SizedBox(width: 2.w),
+                    Text(
+                      farm.farmName, // real API field
+                      style: TextStyle(
                         color: Colors.white,
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  // Verified Badge
-                  if (farm.isVerified)
-                    Positioned(
-                      top: 1.h,
-                      right: 2.w,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 0.5.h),
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.verified, color: Colors.white, size: 14.sp),
-                            SizedBox(width: 1.w),
-                            Text(
-                              'Verified',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
+
             // Farm Info
             Padding(
               padding: EdgeInsets.all(3.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Farm Name
-                  Text(
-                    farm.farmName,
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
-                    ),
-                  ),
-                  SizedBox(height: 0.5.h),
                   // Location
                   Row(
                     children: [
-                      Icon(Icons.location_on, size: 14.sp, color: Colors.grey[600]),
+                      Icon(Icons.location_on,
+                          size: 14.sp, color: Colors.grey[600]),
                       SizedBox(width: 1.w),
                       Expanded(
                         child: Text(
-                          '${farm.address}, ${farm.city}',
+                          farm.location, // real API field
                           style: TextStyle(
-                            fontSize: 11.sp,
+                            fontSize: 12.5.sp,
                             color: Colors.grey[600],
                           ),
                           maxLines: 1,
@@ -242,35 +222,36 @@ class FarmsListScreen extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 1.h),
-                  // Farm Type & Rating
+
+                  // Hardcoded farm type & rating row
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Farm Type
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 0.5.h),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 3.w, vertical: 0.5.h),
                         decoration: BoxDecoration(
                           color: AppColors.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          farm.farmType,
+                          farm.farmType, // real API field, or fallback
                           style: TextStyle(
-                            fontSize: 10.sp,
+                            fontSize: 12.sp,
                             color: AppColors.primary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
-                      // Rating
                       Row(
                         children: [
-                          Icon(Icons.star, color: Colors.amber, size: 16.sp),
+                          const Icon(Icons.star,
+                              color: Colors.amber, size: 18),
                           SizedBox(width: 1.w),
                           Text(
-                            '${farm.rating.toStringAsFixed(1)} (${farm.totalReviews})',
+                            '4.5 (0)', // hardcoded
                             style: TextStyle(
-                              fontSize: 11.sp,
+                              fontSize: 12.sp,
                               color: Colors.grey[700],
                               fontWeight: FontWeight.w500,
                             ),
@@ -279,12 +260,14 @@ class FarmsListScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+
                   SizedBox(height: 1.h),
-                  // Description
+
+                  // Hardcoded description
                   Text(
-                    farm.description,
+                    'Fresh farm eggs from ${farm.location}',
                     style: TextStyle(
-                      fontSize: 11.sp,
+                      fontSize: 12.2.sp,
                       color: Colors.grey[600],
                     ),
                     maxLines: 2,
