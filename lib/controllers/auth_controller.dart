@@ -1,56 +1,101 @@
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../data/models/auth/login_request.dart';
+import '../data/models/auth/login_response.dart';
+import '../data/models/auth/register_request.dart';
+import '../data/models/auth/register_response.dart';
+import '../data/repositories/auth_repository.dart';
 import '../routes/app_routes.dart';
-import '../utils/colors.dart';
 
 class AuthController extends GetxController {
-  final RxBool isLoading = false.obs;
-  final RxBool _isLoggedIn = false.obs;
-  final RxBool _isPasswordVisible = false.obs;  // ✅ Add this
+  final AuthRepository _authRepository = AuthRepository();
 
-  bool get isLoggedIn => _isLoggedIn.value;
-  RxBool get isPasswordVisible => _isPasswordVisible;  // ✅ Add this getter
+  var isLoading = false.obs;
+  var isLoggedIn = false.obs;
+  var userName = ''.obs;
+  var userEmail = ''.obs;
+  var userRole = ''.obs;
+  var userId = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
-    _checkLoginStatus();
+    checkLoginStatus();
   }
 
-  void _checkLoginStatus() {
-    _isLoggedIn.value = false;
+  // Check if user is already logged in (using userId instead of token)
+  Future<void> checkLoginStatus() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getString('userId');
+      final role = prefs.getString('userRole');
+      final name = prefs.getString('userName');
+      final email = prefs.getString('userEmail');
+
+      print('🔍 Checking login status...');
+      print('UserId: $userId');
+      print('Role: $role');
+
+      // Check if userId exists (instead of token)
+      if (userId != null && userId.isNotEmpty && userId != '0') {
+        isLoggedIn.value = true;
+        userRole.value = role ?? 'CUSTOMER';
+        userName.value = name ?? '';
+        userEmail.value = email ?? '';
+        this.userId.value = userId;
+        print('✅ User is logged in!');
+      } else {
+        print('❌ No user session found');
+      }
+    } catch (e) {
+      print('Error checking login status: $e');
+    }
   }
 
-  // ✅ Toggle password visibility
-  void togglePasswordVisibility() {
-    _isPasswordVisible.value = !_isPasswordVisible.value;
-  }
-
-  Future<void> login({
-    required String email,
-    required String password,
-  }) async {
+  // Login
+  Future<void> login(String email, String password) async {
     try {
       isLoading.value = true;
 
-      await Future.delayed(const Duration(seconds: 2));
+      final request = LoginRequest(email: email, password: password);
+      final response = await _authRepository.login(request);
 
-      _isLoggedIn.value = true;
+      // Save to SharedPreferences (no token needed!)
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('userId', response.user.id.toString());
+      await prefs.setString('userName', response.user.name);
+      await prefs.setString('userEmail', response.user.email);
+      await prefs.setString('userRole', response.user.role);
+      await prefs.setBool('isLoggedIn', true); // Simple flag
+
+      // Update controller state
+      isLoggedIn.value = true;
+      userName.value = response.user.name;
+      userEmail.value = response.user.email;
+      userRole.value = response.user.role;
+      userId.value = response.user.id.toString();
+
+      print('🟢 Login successful! Saved data:');
+      print('UserId: ${response.user.id}');
+      print('Role: ${response.user.role}');
+      print('Name: ${response.user.name}');
+
+      // Navigate based on role
+      if (response.user.role == 'FARMER') {
+        Get.offAllNamed(AppRoutes.farmerDashboard);
+      } else {
+        Get.offAllNamed(AppRoutes.customerHome);
+      }
 
       Get.snackbar(
         'Success',
-        'Login successful!',
-        backgroundColor: AppColors.success,
-        colorText: AppColors.white,
+        'Welcome back, ${response.user.name}!',
         snackPosition: SnackPosition.BOTTOM,
       );
-
-      Get.offAllNamed(AppRoutes.home);
     } catch (e) {
       Get.snackbar(
-        'Error',
-        'Login failed: ${e.toString()}',
-        backgroundColor: AppColors.error,
-        colorText: AppColors.white,
+        'Login Failed',
+        e.toString().replaceAll('Exception: ', ''),
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -58,39 +103,61 @@ class AuthController extends GetxController {
     }
   }
 
+  // Register
   Future<void> register({
-    required String fullName,
+    required String name,
     required String email,
     required String password,
-    required String phoneNumber,
+    required String phone,
     required String role,
   }) async {
     try {
       isLoading.value = true;
 
-      await Future.delayed(const Duration(seconds: 2));
+      final request = RegisterRequest(
+        name: name,
+        email: email,
+        password: password,
+        role: role,
+      );
 
-      _isLoggedIn.value = true;
+      final response = await _authRepository.register(request);
+
+      // Save to SharedPreferences (no token needed!)
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('userId', response.user.id.toString());
+      await prefs.setString('userName', response.user.name);
+      await prefs.setString('userEmail', response.user.email);
+      await prefs.setString('userRole', response.user.role);
+      await prefs.setBool('isLoggedIn', true);
+
+      // Update controller state
+      isLoggedIn.value = true;
+      userName.value = response.user.name;
+      userEmail.value = response.user.email;
+      userRole.value = response.user.role;
+      userId.value = response.user.id.toString();
+
+      print('🟢 Registration successful! Saved data:');
+      print('UserId: ${response.user.id}');
+      print('Role: ${response.user.role}');
+
+      // Navigate based on role
+      if (response.user.role == 'FARMER') {
+        Get.offAllNamed(AppRoutes.farmerDashboard);
+      } else {
+        Get.offAllNamed(AppRoutes.customerHome);
+      }
 
       Get.snackbar(
         'Success',
-        'Registration successful!',
-        backgroundColor: AppColors.success,
-        colorText: AppColors.white,
+        'Account created successfully!',
         snackPosition: SnackPosition.BOTTOM,
       );
-
-      if (role == 'customer') {
-        Get.offAllNamed(AppRoutes.home);
-      } else {
-        Get.offAllNamed(AppRoutes.farmerDashboard);
-      }
     } catch (e) {
       Get.snackbar(
-        'Error',
-        'Registration failed: ${e.toString()}',
-        backgroundColor: AppColors.error,
-        colorText: AppColors.white,
+        'Registration Failed',
+        e.toString().replaceAll('Exception: ', ''),
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -98,16 +165,28 @@ class AuthController extends GetxController {
     }
   }
 
-  void logout() {
-    _isLoggedIn.value = false;
-    Get.offAllNamed(AppRoutes.login);
+  // Logout
+  Future<void> logout() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
 
-    Get.snackbar(
-      'Logged Out',
-      'You have been logged out successfully',
-      backgroundColor: AppColors.info,
-      colorText: AppColors.white,
-      snackPosition: SnackPosition.BOTTOM,
-    );
+      // Reset controller state
+      isLoggedIn.value = false;
+      userName.value = '';
+      userEmail.value = '';
+      userRole.value = '';
+      userId.value = '';
+
+      Get.offAllNamed(AppRoutes.login);
+
+      Get.snackbar(
+        'Logged Out',
+        'You have been logged out successfully',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      print('Error during logout: $e');
+    }
   }
 }

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
-import '../utils/app_constants.dart';
 import '../utils/colors.dart';
-import '../utils/text_styles.dart';
 
 class FarmCard extends StatelessWidget {
   final String farmName;
@@ -24,29 +22,30 @@ class FarmCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.only(bottom: 2.h),
-        padding: EdgeInsets.all(4.w),
+        padding: EdgeInsets.all(3.5.w),
         decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(8.0),
-          boxShadow: AppConstants.lightShadow,
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: Row(
           children: [
-            // Farm Image/Icon
+            // Farm Icon with Gradient
             Container(
-              width: 20.w,
-              height: 20.w,
+              padding: EdgeInsets.all(3.5.w),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8.0),
+                gradient: AppColors.primaryGradient,
+                borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(
-                Icons.agriculture,
-                size: 10.w,
-                color: AppColors.primary,
-              ),
+              child: Icon(Icons.agriculture_rounded, color: Colors.white, size: 8.w),
             ),
-            SizedBox(width: 4.w),
+            SizedBox(width: 3.w),
 
             // Farm Details
             Expanded(
@@ -55,23 +54,22 @@ class FarmCard extends StatelessWidget {
                 children: [
                   Text(
                     farmName,
-                    style: AppTextStyles.subheading2,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textDark,
+                    ),
                   ),
-                  SizedBox(height: 0.5.h),
+                  SizedBox(height: 0.8.h),
                   Row(
                     children: [
-                      Icon(
-                        Icons.location_on,
-                        size: 4.w,
-                        color: AppColors.textGrey,
-                      ),
+                      Icon(Icons.location_on_rounded, color: AppColors.textGrey, size: 4.w),
                       SizedBox(width: 1.w),
                       Expanded(
                         child: Text(
                           location,
-                          style: AppTextStyles.bodySmall.copyWith(
+                          style: TextStyle(
+                            fontSize: 11.sp,
                             color: AppColors.textGrey,
                           ),
                           maxLines: 1,
@@ -80,37 +78,45 @@ class FarmCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 0.5.h),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.star,
-                        color: AppColors.warning,
-                        size: 4.w,
-                      ),
-                      SizedBox(width: 1.w),
-                      Text(
-                        rating.toStringAsFixed(1),
-                        style: AppTextStyles.bodyMedium,
-                      ),
-                      SizedBox(width: 1.w),
-                      Text(
-                        '(${(rating * 10).toInt()} reviews)',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.textGrey,
+                  SizedBox(height: 0.8.h),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.5.h),
+                    decoration: BoxDecoration(
+                      color: AppColors.warning.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.star_rounded, color: AppColors.warning, size: 4.w),
+                        SizedBox(width: 1.w),
+                        Text(
+                          '$rating',
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.warning,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
 
             // Arrow Icon
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 4.w,
-              color: AppColors.textGrey,
+            Container(
+              padding: EdgeInsets.all(2.w),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 4.w,
+                color: AppColors.primary,
+              ),
             ),
           ],
         ),

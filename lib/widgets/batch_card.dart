@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
-import '../utils/app_constants.dart';
 import '../utils/colors.dart';
-import '../utils/text_styles.dart';
 
 class BatchCard extends StatelessWidget {
   final String eggType;
@@ -24,119 +22,149 @@ class BatchCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(bottom: 2.h),
-      padding: EdgeInsets.all(4.w),
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(8.0),
-        boxShadow: AppConstants.lightShadow,
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              // Egg Image/Icon
-              Container(
-                width: 15.w,
-                height: 15.w,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: Icon(
-                  Icons.egg,
-                  color: AppColors.primary,
-                  size: 8.w,
-                ),
+          // Header with Type and Freshness
+          Container(
+            padding: EdgeInsets.all(4.w),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppColors.primary.withOpacity(0.1), AppColors.primary.withOpacity(0.05)],
               ),
-              SizedBox(width: 3.w),
-
-              // Egg Details
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
                   children: [
-                    Text(eggType, style: AppTextStyles.subheading2),
-                    SizedBox(height: 0.3.h),
+                    Icon(Icons.egg_rounded, color: AppColors.primary, size: 6.w),
+                    SizedBox(width: 2.w),
                     Text(
-                      '₹${price.toStringAsFixed(2)} per egg',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.primary,
+                      eggType,
+                      style: TextStyle(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDark,
                       ),
                     ),
                   ],
                 ),
-              ),
-
-              // Add to Cart Button
-              ElevatedButton(
-                onPressed: onAddToCart,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 4.w,
-                    vertical: 1.h,
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 0.8.h),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppColors.success, AppColors.success.withOpacity(0.8)],
+                    ),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.verified_rounded, color: Colors.white, size: 3.5.w),
+                      SizedBox(width: 1.w),
+                      Text(
+                        '${freshnessScore.toInt()}% Fresh',
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                child: Text(
-                  'Add',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.white,
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-          SizedBox(height: 1.5.h),
 
-          // Freshness and Quantity Info
-          Row(
-            children: [
-              // Freshness Indicator
-              Icon(
-                Icons.verified,
-                size: 4.w,
-                color: _getFreshnessColor(freshnessScore),
-              ),
-              SizedBox(width: 1.w),
-              Text(
-                'Freshness: ${freshnessScore.toStringAsFixed(1)}%',
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: _getFreshnessColor(freshnessScore),
+          // Content
+          Padding(
+            padding: EdgeInsets.all(4.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.inventory_2_rounded, color: AppColors.textGrey, size: 4.5.w),
+                    SizedBox(width: 2.w),
+                    Text(
+                      '$quantity eggs available',
+                      style: TextStyle(fontSize: 12.sp, color: AppColors.textGrey),
+                    ),
+                  ],
                 ),
-              ),
-              SizedBox(width: 4.w),
-
-              // Quantity
-              Icon(
-                Icons.inventory_2_outlined,
-                size: 4.w,
-                color: AppColors.textGrey,
-              ),
-              SizedBox(width: 1.w),
-              Text(
-                'Qty: $quantity',
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.textGrey,
+                SizedBox(height: 2.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Price per egg',
+                          style: TextStyle(fontSize: 11.sp, color: AppColors.textGrey),
+                        ),
+                        SizedBox(height: 0.3.h),
+                        Text(
+                          '₹${price.toStringAsFixed(2)}',
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: AppColors.primaryGradient,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton.icon(
+                        onPressed: onAddToCart,
+                        icon: Icon(Icons.add_shopping_cart_rounded, size: 5.w),
+                        label: Text(
+                          'Add to Cart',
+                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
     );
-  }
-
-  Color _getFreshnessColor(double score) {
-    if (score >= 90) {
-      return AppColors.success;
-    } else if (score >= 70) {
-      return AppColors.warning;
-    } else {
-      return AppColors.error;
-    }
   }
 }

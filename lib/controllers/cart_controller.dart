@@ -1,83 +1,59 @@
 import 'package:get/get.dart';
-
-class CartItem {
-  final String id;
-  final String eggType;
-  final String farmName;
-  final double pricePerUnit;
-  final int quantity;
-
-  CartItem({
-    required this.id,
-    required this.eggType,
-    required this.farmName,
-    required this.pricePerUnit,
-    required this.quantity,
-  });
-}
+import '../models/batch_model.dart';
+import '../models/cart_item.dart';
 
 class CartController extends GetxController {
-  final RxList<CartItem> cart = <CartItem>[].obs;
-  final RxDouble subtotal = 0.0.obs;
-  final RxDouble deliveryFee = 40.0.obs;
-  final RxDouble total = 0.0.obs;
+  final RxList<CartItem> items = <CartItem>[].obs;
+  final RxBool isDrawerOpen = false.obs;
 
-  bool get isEmpty => cart.isEmpty;
+  double get totalAmount => items.fold(0, (sum, item) => sum + item.totalPrice);
+  int get itemCount => items.length;
 
-  void addToCart({
-    required String id,
-    required String eggType,
-    required String farmName,
-    required double pricePerUnit,
-    required int quantity,
-  }) {
-    // Check if item already exists
-    final existingIndex = cart.indexWhere((item) => item.id == id);
+  void addToCart(Batch batch, String farmName) {
+    final existingIndex = items.indexWhere((item) => item.batchId == batch.id);
 
-    if (existingIndex >= 0) {
-      // Update quantity
-      final existingItem = cart[existingIndex];
-      cart[existingIndex] = CartItem(
-        id: existingItem.id,
-        eggType: existingItem.eggType,
-        farmName: existingItem.farmName,
-        pricePerUnit: existingItem.pricePerUnit,
-        quantity: existingItem.quantity + quantity,
-      );
+    if (existingIndex != -1) {
+      items[existingIndex].quantity++;
+      items.refresh();
     } else {
-      // Add new item
-      cart.add(CartItem(
-        id: id,
-        eggType: eggType,
+      items.add(CartItem(
+        batchId: batch.id,
+        eggType: batch.eggType,
+        pricePerEgg: batch.pricePerEgg,
+        quantity: 1,
         farmName: farmName,
-        pricePerUnit: pricePerUnit,
-        quantity: quantity,
       ));
     }
-    _calculateTotals();
+
+    Get.snackbar(
+      'Added to Cart',
+      '${batch.eggType} added successfully',
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 2),
+    );
   }
 
-  void removeFromCart(String id) {
-    cart.removeWhere((item) => item.id == id);
-    _calculateTotals();
+  void removeFromCart(String batchId) {
+    items.removeWhere((item) => item.batchId == batchId);
+  }
+
+  void updateQuantity(String batchId, int quantity) {
+    final index = items.indexWhere((item) => item.batchId == batchId);
+    if (index != -1) {
+      if (quantity > 0) {
+        items[index].quantity = quantity;
+        items.refresh();
+      } else {
+        removeFromCart(batchId);
+      }
+    }
+  }
+
+  void toggleDrawer() {
+    isDrawerOpen.value = !isDrawerOpen.value;
   }
 
   void clearCart() {
-    cart.clear();
-    _calculateTotals();
-  }
-
-  void _calculateTotals() {
-    double sum = 0.0;
-    for (var item in cart) {
-      sum += item.pricePerUnit * item.quantity;
-    }
-    subtotal.value = sum;
-    total.value = sum + deliveryFee.value;
-  }
-
-  void updateDeliveryFee(double fee) {
-    deliveryFee.value = fee;
-    total.value = subtotal.value + deliveryFee.value;
+    items.clear();
   }
 }
